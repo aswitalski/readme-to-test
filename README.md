@@ -1,2 +1,2 @@
-# readme-to-test
-A simple README file examples validator
+# validate-readme
+A simple README code examples validator.
