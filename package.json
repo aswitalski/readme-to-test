@@ -1,0 +1,30 @@
+{
+  "name": "validate-readme",
+  "version": "0.1.0",
+  "description": "A simple README code examples validator.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aswitalski/validate-readme.git"
+  },
+  "keywords": [
+    "validate",
+    "readme",
+    "validator",
+    "es6",
+    "javascript"
+  ],
+  "author": "Aleksander Switalski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aswitalski/validate-readme/issues"
+  },
+  "homepage": "https://github.com/aswitalski/validate-readme#readme",
+  "dependencies": {
+    "babel-register": "^6.3.13",
+    "mocha": "^2.3.4"
+  }
+}
