@@ -16,3 +16,5 @@ global.pwd = () => {
 	  }
 	});
 };
+
+global.readFile = (path) => fs.readFileSync(path, 'utf8');
