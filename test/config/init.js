@@ -18,3 +18,5 @@ global.pwd = () => {
 };
 
 global.readFile = (path) => fs.readFileSync(path, 'utf8');
+
+global.fileName = (path) => path.match(/^.*\/(.+)$/)[1];
