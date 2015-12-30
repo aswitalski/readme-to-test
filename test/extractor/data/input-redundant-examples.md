@@ -1,6 +1,6 @@
 # Unimportant header
 
-#### Example one
+#### Redundant example one
 
 ``` js
 
@@ -12,7 +12,7 @@ export default result;
 
 ### Unimportant header
 
-#### Example two
+#### Redundant example two
 
 ``` js
 

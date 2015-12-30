@@ -1,5 +1,7 @@
 'use strict';
 
+const Example = require('./Example');
+
 const extractExamples = (markdown) => {
 
 	let regex = /```\s*js(.|[^])*?```/g;
@@ -8,40 +10,36 @@ const extractExamples = (markdown) => {
 
   	if (codeExamples) {
 
-   		return codeExamples.map(example => {
+   		return codeExamples
+            .map(example => {
 
-  			let found = false;
-  			let finished = false;
-  			
-  			let lines = example.match(/(.)*[^]/g).reduce((result, line) => {
-  				if (finished === false) {
-	  				if (line.match(/```/)) {
-	  					if (found) {
-	  						finished = true;
-	  					}
-	  				} else {
-	  					result.push(line);
-	  				}
-  				}
-				return result;
-  			}, []);
+                let found = false;
+                let finished = false;
 
-  			const code = lines.join('').trim();
+                let lines = example.match(/(.)*[^]/g).reduce((result, line) => {
+                    if (finished === false) {
+                        if (line.match(/```/)) {
+                            if (found) {
+                                finished = true;
+                            }
+                        } else {
+                            result.push(line);
+                        }
+                    }
+                    return result;
+                }, []);
 
-	  		// console.log(code);
-	  		// console.log('--------------------------------');
-
-	  		return code;
- 		});
+  			    return lines.join('').trim();
+     		})
+            .map((code, index) => {
+                return new Example(code, 'Example ' + (index + 1));
+            });
+        ;
 
   	} else {
   		console.error('No code examples found.');
   		return null;
   	}
-};
-
-extractExamples.withNames = () => {
-  throw 'Not implemented!';
 };
 
 module.exports = extractExamples;

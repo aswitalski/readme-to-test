@@ -6,10 +6,6 @@ describe('JavaScript code examples extraction', () => {
 		assert.equal(typeof extractExamples, 'function');
 	});
 
-	it('exposes extractExamples.withNames()', () => {
-		assert.equal(typeof extractExamples.withNames, 'function');
-	});
-
 	it('extracts basic example', () => {
 
         const readMePath = './test/extractor/data/input-basic-example.md';
@@ -21,7 +17,8 @@ describe('JavaScript code examples extraction', () => {
 
         assert(examples, 'Examples not found in file: ' + fileName(readMePath));
 		assert.equal(examples.length, 1);
-		assert.equal(examples[0], singleExampleCode);
+		assert.equal(examples[0].code, singleExampleCode);
+        assert.equal(examples[0].name, 'Example 1');
 	});
 
 	it('extracts redundant examples', () => {
@@ -35,8 +32,10 @@ describe('JavaScript code examples extraction', () => {
 
         assert(examples, 'Examples not found in file: ' + fileName(readMePath));
         assert.equal(examples.length, 2);
-        assert.equal(examples[0], redundantExamplesCode);
-        assert.equal(examples[1], redundantExamplesCode);
+        assert.equal(examples[0].code, redundantExamplesCode);
+        assert.equal(examples[0].name, 'Example 1');
+        assert.equal(examples[1].code, redundantExamplesCode);
+        assert.equal(examples[1].name, 'Example 2');
     });
 
     it('extracts example with extra white spaces', () => {
@@ -50,7 +49,8 @@ describe('JavaScript code examples extraction', () => {
 
         assert(examples, 'Examples not found in file: ' + fileName(readMePath));
         assert.equal(examples.length, 1);
-        assert.equal(examples[0], extraSpacesCode);
+        assert.equal(examples[0].code, extraSpacesCode);
+        assert.equal(examples[0].name, 'Example 1');
     });
 
 });

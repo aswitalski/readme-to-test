@@ -1,6 +1,6 @@
 # Unimportant header
 
-#### Example name
+#### Basic example
 
 ``` js
 
