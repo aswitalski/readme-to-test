@@ -1,6 +1,6 @@
 'use strict';
 
-import extractExamples from '../src/extractor';
+import extractExamples from '../src/extract-examples';
 
 describe('JavaScript code examples extraction', () => {
 
