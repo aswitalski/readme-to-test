@@ -1,4 +1,6 @@
-const extractExamples = require('../src/extractor');
+'use strict';
+
+import extractExamples from '../src/extractor';
 
 describe('JavaScript code examples extraction', () => {
 
