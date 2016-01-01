@@ -39,11 +39,12 @@ const replacePrintsComment = (example, packageName, mainFile) => {
 module.exports = function convertToTests(examples, packageName, mainFile) {
 
 	return examples.map(example => {
-		let amendedImport = amendImport(example, packageName, mainFile);
+
+		let amendedImport = amendImport(example.code, packageName, mainFile);
 		let withAsserts = replacePrintsComment(amendedImport);
-		let asTest = convertToTest(withAsserts, 'Example');
+		let asTest = convertToTest(withAsserts, example.name);
 		let formattedTest = asTest.trim();
-		console.log(formattedTest)
+		console.log(formattedTest);
 		return formattedTest;
 	});
 };

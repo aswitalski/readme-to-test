@@ -6,7 +6,7 @@ const fs = require('fs');
 const rmdir = require('rmdir');
 const rootRequire = require('root-require');
 
-const extractExamples = require('./extractor');
+const extractExamples = require('./extract-examples');
 const convertToTests = require('./converter');
 
 let packageJson;

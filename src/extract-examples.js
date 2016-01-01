@@ -1,17 +1,39 @@
 'use strict';
 
-const Example = require('./Example');
+const Fragment = require('./vo/Fragment');
+const Example = require('./vo/Example');
+
+const extractHeaders = (markdown) => {
+
+    let regex = /\s*#{1,4}\s*(.+)[^]/g;
+    const fragments = [];
+    let match = regex.exec(markdown);
+    while (match) {
+        fragments.push(new Fragment(match[1].trim(), match.index));
+        match = regex.exec(markdown);
+    }
+    fragments.reverse();
+    return fragments;
+};
 
 const extractExamples = (markdown) => {
 
-	let regex = /```\s*js(.|[^])*?```/g;
+    let regex = /```\s*js(.|[^])*?```/g;
+    const fragments = [];
+    let match = regex.exec(markdown);
+    while (match) {
+        fragments.push(new Fragment(match[0], match.index));
+        match = regex.exec(markdown);
+    }
 
-  	let codeExamples = markdown.match(regex);
+    const headers = extractHeaders(markdown);
 
-  	if (codeExamples) {
+    if (fragments.length > 0) {
 
-   		return codeExamples
-            .map(example => {
+        return fragments
+            .map((fragment, index) => {
+
+                const example = fragment.code;
 
                 let found = false;
                 let finished = false;
@@ -29,17 +51,15 @@ const extractExamples = (markdown) => {
                     return result;
                 }, []);
 
-  			    return lines.join('').trim();
-     		})
-            .map((code, index) => {
-                return new Example(code, 'Example ' + (index + 1));
+                const code =  lines.join('').trim();
+                const header = headers.find(h => h.index < fragment.index);
+                return new Example(code, header ? header.code : 'Example ' + (index + 1));
             });
-        ;
 
-  	} else {
-  		console.error('No code examples found.');
-  		return null;
-  	}
+    } else {
+        console.error('No code examples found.');
+        return null;
+    }
 };
 
 module.exports = extractExamples;
