@@ -87,3 +87,7 @@ The libary uses the following default settings:
 ```
 
 The temporary folder settings can be overriden in `test/r2t.opts` file. 
+
+# Post Scriptum
+
+Yes, it validates its own README as well!
