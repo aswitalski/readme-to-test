@@ -7,27 +7,7 @@ export default function(code, testName, libraryName, pathToMainScript) {
     let lastImport;
     let variableName;
 
-    //console.log('Code:');
-    //console.log('--------');
-    //console.log(code.trim());
-    //console.log('--------');
-    //console.log('Length:');
-    //console.log(lines.length);
-
-    const convertImport = () => {
-
-    };
-
-
-    const wrapAsTestCase = () => {
-
-        const indent = () => {
-
-        };
-
-    };
-
-    const result = lines
+    return lines
         .map(function convertImport(line) {
             if (line.match(new RegExp(`import .+ from '${libraryName}'`))) {
                 return line.replace(new RegExp(`'${libraryName}'`), `'../${pathToMainScript}'`);
@@ -88,8 +68,4 @@ export default function(code, testName, libraryName, pathToMainScript) {
             return line;
         })
         .join('\n');
-
-    //console.log(result);
-
-    return result;
 };
