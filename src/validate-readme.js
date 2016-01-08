@@ -1,67 +1,50 @@
 'use strict';
 
+require('babel-register');
+
 const fs = require('fs');
+const rmdir = require('rmdir');
+const rootRequire = require('root-require');
 
-const extractExamples = (markdown) => {
+const extractExamples = require('./extract-examples');
+const convertToTests = require('./converter');
 
-	let regex = /```\s*js(.|[^])*?```/g;
-
-  	let codeExamples = markdown.match(regex);
-
-  	if (codeExamples) {
-
-   		return codeExamples.map(example => {
-
-  			let found = false;
-  			let finished = false;
-  			
-  			let lines = example.match(/(.)*[^]/g).reduce((result, line) => {
-  				if (finished === false) {
-	  				if (line.match(/```/)) {
-	  					if (found) {
-	  						finished = true;
-	  					}
-	  				} else {
-	  					result.push(line);
-	  				}
-  				}
-				return result;
-  			}, []);
-
-  			const code = lines.join('').trim();
-
-	  		console.log(code);
-	  		console.log('--------------------------------');
-
-	  		return code;
- 		});
-
-  	} else {
-  		console.error('No code examples found.');
-  		return null;
-  	}
-};
+let packageJson;
+fs.readFile('./package.json', 'utf8', (err, contents) => {
+	packageJson = JSON.parse(contents);
+});
 
 const validate = () => {
+    fs.readFile('./README.md', 'utf8', (err, markdown) => {
+
+        if (err) {
+            console.error('Error reading README.md file');
+            process.exit(1);
+        }
+
+        const examples = extractExamples(markdown);
+
+        console.log(` Found ${examples.length} code examples.`);
+
+        const tests = examples.map(example =>  convertToTests(example.code, example.name, packageJson.name, packageJson.main));
+
   console.log('\n==> Validating README examples...\n');
 
-  fs.readFile('./README.md', 'utf8', (err, markdown) => {
+	try {
 
-  	if (err) {
-  		console.error('Error reading README.md file');
-  		process.exit(1);
-  	}
+		fs.mkdirSync('./.tmp');
 
-  	const examples = extractExamples(markdown);
+		tests.map((test, index) => {
+			fs.writeFileSync('./.tmp/example-' + (index + 1) + '.test.js', test);
+		});
 
-	console.log(` Found ${examples.length} code examples.`);
+		require('./test-runner');
+
+	} finally {
+		rmdir('./.tmp', { fs: fs });
+	}
 
   });
 };
-
-
-
-
-validate();
 
 module.exports = validate;
