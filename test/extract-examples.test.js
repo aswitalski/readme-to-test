@@ -2,7 +2,7 @@
 
 import extractExamples from '../src/extract-examples';
 
-describe('JavaScript code examples extraction ==>', () => {
+describe('JavaScript code examples extraction', () => {
 
 	it('exposes extractExamples()', () => {
 		assert.equal(typeof extractExamples, 'function');
