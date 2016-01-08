@@ -1,20 +1,19 @@
 'use strict';
 
-require('babel-register');
+import fs from 'fs';
+import path from 'path';
+import rmdir from 'rmdir';
 
-const fs = require('fs');
-const rmdir = require('rmdir');
-const rootRequire = require('root-require');
-
-const extractExamples = require('./extract-examples');
-const convertToTests = require('./converter');
+import extractExamples from './extractor/extract-examples';
+import convertToTest from './converter/convert-to-test';
+import mochaRunner from './runner/mocha-runner';
 
 let packageJson;
 fs.readFile('./package.json', 'utf8', (err, contents) => {
-	packageJson = JSON.parse(contents);
+    packageJson = JSON.parse(contents);
 });
 
-const validate = () => {
+module.exports = () => {
     fs.readFile('./README.md', 'utf8', (err, markdown) => {
 
         if (err) {
@@ -26,25 +25,30 @@ const validate = () => {
 
         console.log(` Found ${examples.length} code examples.`);
 
-        const tests = examples.map(example =>  convertToTests(example.code, example.name, packageJson.name, packageJson.main));
+        const tests = examples.map(example => convertToTest(example.code, example.name, packageJson.name, packageJson.main));
 
-  console.log('\n==> Validating README examples...\n');
+        console.log('\n==> Validating README examples...');
 
-	try {
+        try {
 
-		fs.mkdirSync('./.tmp');
+            const tempDir = './.tmp';
 
-		tests.map((test, index) => {
-			fs.writeFileSync('./.tmp/example-' + (index + 1) + '.test.js', test);
-		});
+            fs.mkdirSync(tempDir);
 
-		require('./test-runner');
+            tests.map((test, index) => {
+                fs.writeFileSync('./.tmp/example-' + (index + 1) + '.test.js', test);
+            });
 
-	} finally {
-		rmdir('./.tmp', { fs: fs });
-	}
+            require('babel-register');
 
-  });
+            const files = fs.readdirSync(tempDir)
+                .filter(file => file.substr(-3) === '.js')
+                .map(file => path.join(tempDir, file));
+
+            mochaRunner(files);
+
+        } finally {
+            rmdir('./.tmp', { fs: fs });
+        }
+    });
 };
-
-module.exports = validate;

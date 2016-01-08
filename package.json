@@ -4,7 +4,8 @@
   "description": "A simple README code examples validator.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "babel": "babel src -d lib -q",
+    "test": "npm run babel && mocha"
   },
   "repository": {
     "type": "git",

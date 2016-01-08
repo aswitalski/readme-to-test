@@ -1,1 +1,1 @@
-require('../src/validate-readme.js')();
+require('../lib/validate-readme.js')();

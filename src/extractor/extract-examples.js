@@ -1,7 +1,7 @@
 'use strict';
 
-const Fragment = require('./vo/Fragment');
-const Example = require('./vo/Example');
+import Fragment from './vo/Fragment';
+import Example from './vo/Example';
 
 const extractHeaders = (markdown) => {
 
@@ -16,7 +16,7 @@ const extractHeaders = (markdown) => {
     return fragments;
 };
 
-const extractExamples = (markdown) => {
+export default (markdown) => {
 
     let regex = /```\s*js(.|[^])*?```/g;
     const fragments = [];
@@ -61,5 +61,3 @@ const extractExamples = (markdown) => {
         return null;
     }
 };
-
-module.exports = extractExamples;
