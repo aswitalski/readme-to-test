@@ -1,6 +1,6 @@
 {
   "name": "readme-to-test",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple README code examples validator.",
   "main": "index.js",
   "scripts": {
