@@ -15,20 +15,20 @@ fs.readFile('./package.json', 'utf8', (err, contents) => {
 });
 
 const validate = () => {
+    fs.readFile('./README.md', 'utf8', (err, markdown) => {
+
+        if (err) {
+            console.error('Error reading README.md file');
+            process.exit(1);
+        }
+
+        const examples = extractExamples(markdown);
+
+        console.log(` Found ${examples.length} code examples.`);
+
+        const tests = examples.map(example =>  convertToTests(example.code, example.name, packageJson.name, packageJson.main));
+
   console.log('\n==> Validating README examples...\n');
-
-  fs.readFile('./README.md', 'utf8', (err, markdown) => {
-
-  	if (err) {
-  		console.error('Error reading README.md file');
-  		process.exit(1);
-  	}
-
-  	const examples = extractExamples(markdown);
-
-	console.log(` Found ${examples.length} code examples.`);
-
-	const tests = convertToTests(examples, packageJson.name, packageJson.main);
 
 	try {
 

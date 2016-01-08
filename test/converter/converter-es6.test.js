@@ -48,4 +48,12 @@ it('Example test', () => {
 
         assert.equal(converter(input, 'Example two', 'library-name', './main-script.js'), output);
     });
+
+    it('transforms code with require and console.log', () => {
+
+        const input = readFile('./test/converter/data/es5/input-require-console-log.js');
+        const output = readFile('./test/converter/data/es5/output-require-console-log.js');
+
+        assert.equal(converter(input, 'Example three', 'key-facsimile', 'index.js'), output);
+    });
 });

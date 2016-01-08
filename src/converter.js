@@ -1,16 +1,24 @@
 'use strict';
 
-export default function(code, testName, libraryName, pathToMainScript) {
+module.exports = function(code, testName, libraryName, pathToMainScript) {
 
     let lines = code.trim().split(/\n/);
 
-    let lastImport;
+    let lastImport = -1;
     let variableName;
 
     return lines
         .map(function convertImport(line) {
             if (line.match(new RegExp(`import .+ from '${libraryName}'`))) {
                 return line.replace(new RegExp(`'${libraryName}'`), `'../${pathToMainScript}'`);
+            } else {
+                return line;
+            }
+        })
+        .map(function convertRequire(line) {
+            if (line.match(new RegExp(`.+require\\('${libraryName}'\\)`))) {
+                //console.log('=====> Found require');
+                return line.replace(new RegExp(`require\\('${libraryName}'\\)`), `require('../${pathToMainScript}')`);
             } else {
                 return line;
             }
@@ -36,6 +44,9 @@ export default function(code, testName, libraryName, pathToMainScript) {
                     default:
                         result.push('');
                         result.push(`it('${testName}', () => {`);
+                        if (index === 0) {
+                            result.push('');
+                        }
                         result.push(line.length === 0 ? '' : `    ${line}`);
                         result.mode = 'indent';
                 }
