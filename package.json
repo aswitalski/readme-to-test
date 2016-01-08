@@ -15,7 +15,9 @@
     "readme",
     "validator",
     "es6",
-    "javascript"
+    "javascript",
+    "test",
+    "mocha"
   ],
   "author": "Aleksander Switalski",
   "license": "MIT",
