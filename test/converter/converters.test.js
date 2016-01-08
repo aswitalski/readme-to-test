@@ -4,34 +4,46 @@ import converters from '../../src/converter/converters';
 
 describe('Converters', () => {
 
+    describe('Division into lines', () => {
+
+        it('splits the trimmed code by line-end characters', () => {
+
+            const code = 'a\nb\nc\n';
+            const result = converters.getLines(code);
+
+            assert.deepEqual(result, ['a', 'b', 'c']);
+        });
+
+    });
+
     describe('Import converter', () => {
 
         it('replaces library name with a path to the main script', () => {
 
-            const importStatement = `import library from 'library-name';`
+            const code = `import library from 'library-name';`
             const libraryName = 'library-name';
             const pathToMainScript = 'main.js';
 
-            const replacedImportStatement = converters.convertImport(importStatement, {
+            const result = converters.convertImport(code, {
                 libraryName,
                 pathToMainScript
             });
 
-            assert.equal(replacedImportStatement, `import library from '../main.js';`)
+            assert.equal(result, `import library from '../main.js';`)
         });
 
-        it('does not replace variable matching library name', () => {
+        it('does not replace variable name', () => {
 
-            const importStatement = `import library from 'library';`
+            const code = `import library from 'library';`
             const libraryName = 'library';
             const pathToMainScript = 'main.js';
 
-            const replacedImportStatement = converters.convertImport(importStatement, {
+            const result = converters.convertImport(code, {
                 libraryName,
                 pathToMainScript
             });
 
-            assert.equal(replacedImportStatement, `import library from '../main.js';`)
+            assert.equal(result, `import library from '../main.js';`)
         });
 
     });

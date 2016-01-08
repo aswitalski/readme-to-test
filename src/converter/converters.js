@@ -1,5 +1,7 @@
 'use strict';
 
+const getLines = (code) => code.trim().split(/\n/);
+
 const convertImport = (line, config) => {
     if (line.match(new RegExp(`import .+ from '${config.libraryName}'`))) {
         return line.replace(new RegExp(`'${config.libraryName}'`), `'../${config.pathToMainScript}'`);
@@ -79,6 +81,7 @@ const replaceEqualityStatement = (line) => {
 };
 
 module.exports = {
+    getLines,
     convertImport,
     convertRequire,
     findLastImport,

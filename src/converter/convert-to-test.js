@@ -1,6 +1,7 @@
 'use strict';
 
 import {
+    getLines,
     convertImport,
     convertRequire,
     findLastImport,
@@ -21,7 +22,7 @@ export default function (code, testName, libraryName, pathToMainScript) {
         variableName: null
     };
 
-    return code.trim().split(/\n/)
+    return getLines(code)
         .map(line => convertImport(line, config))
         .map(line => convertRequire(line, config))
         .map((line, index) => findLastImport(line, index, config))
