@@ -34,6 +34,10 @@
   },
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.3.13",
-    "babel-preset-es2015": "^6.3.13"
-  }
+    "babel-preset-es2015": "^6.3.13",
+    "pre-commit": "^1.1.2"
+  },
+  "pre-commit": [
+    "test"
+  ]
 }
