@@ -1,9 +1,9 @@
 import assert from 'assert';
 import converter from '../../src/converter'
 
-describe('Converter - ES6 mode', function() {
+describe.only('Converter - ES6 mode', function() {
 
-    it('swaps library name with a path to the main script', () => {
+    it.skip('feature | swaps library name with a path to the main script', () => {
 
         const importStatement = `import library from 'library-name';`
         const libraryName = 'library-name';
@@ -14,7 +14,7 @@ describe('Converter - ES6 mode', function() {
         assert.equal(replacedImportStatement, `import library from '.././main-script';`)
     });
 
-    it('wraps the code after imports as a test case', () => {
+    it.skip('feature | wraps the code after imports as a test case', () => {
 
         const input = readFile('./test/converter/data/es6/input-import-console-log.js');
         const output = `import library from 'library-name';
@@ -33,7 +33,7 @@ it('Example test', () => {
         assert.equal(converter(input, 'Example test'), output);
     });
 
-    it.only('transforms code with imports and console.log', () => {
+    it('transforms code with import and console.log', () => {
 
         const input = readFile('./test/converter/data/es6/input-import-console-log.js');
         const output = readFile('./test/converter/data/es6/output-import-console-log.js');
@@ -41,4 +41,11 @@ it('Example test', () => {
         assert.equal(converter(input, 'Example one', 'library-name', './main-script.js'), output);
     });
 
+    it('transforms code with imports and equality comparison', () => {
+
+        const input = readFile('./test/converter/data/es6/input-imports-equality.js');
+        const output = readFile('./test/converter/data/es6/output-imports-equality.js');
+
+        assert.equal(converter(input, 'Example two', 'library-name', './main-script.js'), output);
+    });
 });

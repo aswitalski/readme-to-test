@@ -5,6 +5,7 @@ export default function(code, testName, libraryName, pathToMainScript) {
     let lines = code.trim().split(/\n/);
 
     let lastImport;
+    let variableName;
 
     //console.log('Code:');
     //console.log('--------');
@@ -63,59 +64,32 @@ export default function(code, testName, libraryName, pathToMainScript) {
             }
             return result;
         }, [])
+        .map(function replacePrintsStatement(line) {
+            const logLine = line.match(/console\.log\((.+?)\)/);
+            if (logLine) {
+                variableName = logLine[1];
+            } else {
+                const printsComment = line.match(/\/\/\s*prints (.+)/);
+                if (printsComment) {
+                    if (variableName) {
+                        return line.replace(/\/\/.+/, `assert.deepEqual(${variableName}, ${printsComment[1]});`);
+                    } else {
+                        console.error('No variable defined for "prints" statement');
+                    }
+                }
+            }
+            return line;
+        })
+        .map(function replaceEqualityStatement(line) {
+            const equality = line.match(/\/\/\s*(.+) === (.+)/);
+            if (equality) {
+                return line.replace(/\/\/.+/, `assert.deepEqual(${equality[1]}, ${equality[2]});`)
+            }
+            return line;
+        })
         .join('\n');
 
     //console.log(result);
 
     return result;
 };
-
-/*
-const amendImport = (example, packageName, mainFile) => {
-	return example.replace(new RegExp("\'" + packageName + "\'"), "'../" + mainFile + "'");
-};
-
-const interceptConsoleLog = () => {
-
-
-};
-
-const convertToTest = (test, name) => {
-
-	const testTemplate = `
-import assert from 'assert';
-${imports}
-it('${name}', () => {
-
-	${test.split('\n').join('\n\t')}
-});
-`;
-	
-	return testTemplate;
-};
-
-const replacePrintsComment = (example, packageName, mainFile) => {
-	return example.split('\n').map(line => {
-		let match = line.match(/(.. prints)(.+)/);
-		if (match) {
-			return 'assert.deepEqual(result, ' + match[2] + ')'; 
-		} else {
-			return line;
-		}
-	}).join('\n');
-};
-
-module.exports = function convertToTests(examples, libraryName, mainFile) {
-
-	return examples.map(example => {
-
-		let amendedImport = amendImport(example.code, libraryName, mainFile);
-		let withAsserts = replacePrintsComment(amendedImport);
-		let asTest = convertToTest(withAsserts, example.name);
-		let formattedTest = asTest.trim();
-		//console.log(formattedTest);
-		return formattedTest;
-	});
-};
-
-*/
