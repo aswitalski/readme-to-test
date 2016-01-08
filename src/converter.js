@@ -1,82 +1,110 @@
 'use strict';
 
-module.exports = function(code, testName, libraryName, pathToMainScript) {
+const convertImport = (line, config) => {
+    if (line.match(new RegExp(`import .+ from '${config.libraryName}'`))) {
+        return line.replace(new RegExp(`'${config.libraryName}'`), `'../${config.pathToMainScript}'`);
+    } else {
+        return line;
+    }
+};
 
-    let lines = code.trim().split(/\n/);
+const convertRequire = (line, config) => {
+    if (line.match(new RegExp(`.+require\\('${config.libraryName}'\\)`))) {
+        //console.log('=====> Found require');
+        return line.replace(new RegExp(`require\\('${config.libraryName}'\\)`), `require('../${config.pathToMainScript}')`);
+    } else {
+        return line;
+    }
+};
 
-    let lastImport = -1;
-    let variableName;
+const findLastImport = (line, index, config) => {
+    if (line.match(/import .+ from/)) {
+        config.lastImport = index;
+    }
+    return line;
+};
 
-    return lines
-        .map(function convertImport(line) {
-            if (line.match(new RegExp(`import .+ from '${libraryName}'`))) {
-                return line.replace(new RegExp(`'${libraryName}'`), `'../${pathToMainScript}'`);
-            } else {
-                return line;
-            }
-        })
-        .map(function convertRequire(line) {
-            if (line.match(new RegExp(`.+require\\('${libraryName}'\\)`))) {
-                //console.log('=====> Found require');
-                return line.replace(new RegExp(`require\\('${libraryName}'\\)`), `require('../${pathToMainScript}')`);
-            } else {
-                return line;
-            }
-        })
-        .map(function findLastImport(line, index) {
-            if (line.match(/import .+ from/)) {
-                lastImport = index;
-            }
-            return line;
-        })
-        .reduce(function wrapAsTestCase(result, line, index, lines) {
-            if (index === 0) {
-                result.push(`import assert from 'assert';`);
-            }
-            if (index > lastImport) {
-                switch (result.mode) {
-                    case 'indent':
-                        result.push(line.length === 0 ? '' : `    ${line}`);
-                        if (index === lines.length -1) {
-                            result.push('});\n');
-                        }
-                        break;
-                    default:
-                        result.push('');
-                        result.push(`it('${testName}', () => {`);
-                        if (index === 0) {
-                            result.push('');
-                        }
-                        result.push(line.length === 0 ? '' : `    ${line}`);
-                        result.mode = 'indent';
+const wrapAsTestCase = (result, line, index, lines, config) => {
+    if (index === 0) {
+        result.push(`import assert from 'assert';`);
+    }
+    if (index > config.lastImport) {
+        switch (result.mode) {
+            case 'indent':
+                result.push(line.length === 0 ? '' : `    ${line}`);
+                if (index === lines.length -1) {
+                    result.push('});\n');
                 }
-            } else {
-                result.push(line);
-            }
-            return result;
-        }, [])
-        .map(function replacePrintsStatement(line) {
-            const logLine = line.match(/console\.log\((.+?)\)/);
-            if (logLine) {
-                variableName = logLine[1];
-            } else {
-                const printsComment = line.match(/\/\/\s*prints (.+)/);
-                if (printsComment) {
-                    if (variableName) {
-                        return line.replace(/\/\/.+/, `assert.deepEqual(${variableName}, ${printsComment[1]});`);
-                    } else {
-                        console.error('No variable defined for "prints" statement');
-                    }
+                break;
+            default:
+                result.push('');
+                result.push(`it('${config.testName}', () => {`);
+                if (index === 0) {
+                    result.push('');
                 }
+                result.push(line.length === 0 ? '' : `    ${line}`);
+                result.mode = 'indent';
+        }
+    } else {
+        result.push(line);
+    }
+    return result;
+};
+
+const replacePrintsStatement = (line, config) => {
+    const logLine = line.match(/console\.log\((.+?)\)/);
+    if (logLine) {
+        config.variableName = logLine[1];
+    } else {
+        const printsComment = line.match(/\/\/\s*prints (.+)/);
+        if (printsComment) {
+            if (config.variableName) {
+                return line.replace(/\/\/.+/, `assert.deepEqual(${config.variableName}, ${printsComment[1]});`);
+            } else {
+                console.error('No variable defined for "prints" statement');
             }
-            return line;
-        })
-        .map(function replaceEqualityStatement(line) {
-            const equality = line.match(/\/\/\s*(.+) === (.+)/);
-            if (equality) {
-                return line.replace(/\/\/.+/, `assert.deepEqual(${equality[1]}, ${equality[2]});`)
-            }
-            return line;
-        })
+        }
+    }
+    return line;
+};
+
+const replaceEqualityStatement = (line) => {
+    const equality = line.match(/\/\/\s*(.+) === (.+)/);
+    if (equality) {
+        return line.replace(/\/\/.+/, `assert.deepEqual(${equality[1]}, ${equality[2]});`)
+    }
+    return line;
+};
+
+const convertToTest = (code, testName, libraryName, pathToMainScript) => {
+
+    const config = {
+        // parameters
+        testName,
+        libraryName,
+        pathToMainScript,
+        // processing information
+        lastImport: -1,
+        variableName: null
+    };
+
+    return code.trim().split(/\n/)
+        .map(line => convertImport(line, config))
+        .map(line => convertRequire(line, config))
+        .map((line, index) => findLastImport(line, index, config))
+        .reduce((...args) => wrapAsTestCase(...args, config), [])
+        .map(line => replacePrintsStatement(line, config))
+        .map(line => replaceEqualityStatement(line))
         .join('\n');
 };
+
+convertToTest.features = {
+    convertImport,
+    convertRequire,
+    findLastImport,
+    wrapAsTestCase,
+    replacePrintsStatement,
+    replaceEqualityStatement
+};
+
+export default convertToTest;
