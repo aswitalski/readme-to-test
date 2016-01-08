@@ -12,7 +12,7 @@ import {
 
 export default function (code, testName, libraryName, pathToMainScript) {
 
-    const config = {
+    const context = {
         // parameters
         testName,
         libraryName,
@@ -23,11 +23,11 @@ export default function (code, testName, libraryName, pathToMainScript) {
     };
 
     return getLines(code)
-        .map(line => convertImport(line, config))
-        .map(line => convertRequire(line, config))
-        .map((line, index) => findLastImport(line, index, config))
-        .reduce((...args) => wrapAsTestCase(...args, config), [])
-        .map(line => replacePrintsStatement(line, config))
+        .map(line => convertImport(line, context))
+        .map(line => convertRequire(line, context))
+        .map((line, index) => findLastImport(line, index, context))
+        .reduce((...args) => wrapAsTestCase(...args, context), [])
+        .map(line => replacePrintsStatement(line, context))
         .map(line => replaceEqualityStatement(line))
         .join('\n');
 };

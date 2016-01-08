@@ -1,35 +1,35 @@
 'use strict';
 
-const getLines = (code) => code.trim().split(/\n/);
+const getLines = (code) => code.trim().split('\n');
 
-const convertImport = (line, config) => {
-    if (line.match(new RegExp(`import .+ from '${config.libraryName}'`))) {
-        return line.replace(new RegExp(`'${config.libraryName}'`), `'../${config.pathToMainScript}'`);
+const convertImport = (line, context) => {
+    if (line.match(new RegExp(`import .+ from '${context.libraryName}'`))) {
+        return line.replace(new RegExp(`'${context.libraryName}'`), `'../${context.pathToMainScript}'`);
     } else {
         return line;
     }
 };
 
-const convertRequire = (line, config) => {
-    if (line.match(new RegExp(`.+require\\('${config.libraryName}'\\)`))) {
-        return line.replace(new RegExp(`require\\('${config.libraryName}'\\)`), `require('../${config.pathToMainScript}')`);
+const convertRequire = (line, context) => {
+    if (line.match(new RegExp(`.+require\\('${context.libraryName}'\\)`))) {
+        return line.replace(new RegExp(`require\\('${context.libraryName}'\\)`), `require('../${context.pathToMainScript}')`);
     } else {
         return line;
     }
 };
 
-const findLastImport = (line, index, config) => {
+const findLastImport = (line, index, context) => {
     if (line.match(/import .+ from/)) {
-        config.lastImport = index;
+        context.lastImport = index;
     }
     return line;
 };
 
-const wrapAsTestCase = (result, line, index, lines, config) => {
+const wrapAsTestCase = (result, line, index, lines, context) => {
     if (index === 0) {
         result.push(`import assert from 'assert';`);
     }
-    if (index > config.lastImport) {
+    if (index > context.lastImport) {
         switch (result.mode) {
             case 'indent':
                 result.push(line.length === 0 ? '' : `    ${line}`);
@@ -39,7 +39,7 @@ const wrapAsTestCase = (result, line, index, lines, config) => {
                 break;
             default:
                 result.push('');
-                result.push(`it('${config.testName}', () => {`);
+                result.push(`it('${context.testName}', () => {`);
                 if (index === 0) {
                     result.push('');
                 }
@@ -55,15 +55,15 @@ const wrapAsTestCase = (result, line, index, lines, config) => {
     return result;
 };
 
-const replacePrintsStatement = (line, config) => {
+const replacePrintsStatement = (line, context) => {
     const logLine = line.match(/console\.log\((.+?)\)/);
     if (logLine) {
-        config.variableName = logLine[1];
+        context.variableName = logLine[1];
     } else {
         const printsComment = line.match(/\/\/\s*prints (.+)/);
         if (printsComment) {
-            if (config.variableName) {
-                return line.replace(/\/\/.+/, `assert.deepEqual(${config.variableName}, ${printsComment[1]});`);
+            if (context.variableName) {
+                return line.replace(/\/\/.+/, `assert.deepEqual(${context.variableName}, ${printsComment[1]});`);
             } else {
                 console.error('No variable defined for "prints" statement');
             }
@@ -73,9 +73,9 @@ const replacePrintsStatement = (line, config) => {
 };
 
 const replaceEqualityStatement = (line) => {
-    const equality = line.match(/\/\/\s*(.+) === (.+)/);
-    if (equality) {
-        return line.replace(/\/\/.+/, `assert.deepEqual(${equality[1]}, ${equality[2]});`)
+    const operands = line.match(/\/\/\s*(.+) === (.+)/);
+    if (operands) {
+        return line.replace(/\/\/.+/, `assert.deepEqual(${operands[1]}, ${operands[2]});`)
     }
     return line;
 };
