@@ -23,29 +23,26 @@ describe('Converters', () => {
 
     describe('Code wrapper', () => {
 
-        it('wraps the code after imports as a test case', () => {
+        it('wraps the single line as a test case', () => {
 
-            const input = readFile('./test/converter/data/es6/input-import-console-log.js');
-            const output = `import assert from 'assert';
-import library from 'library-name';
+            const input =
+/* ---------------------------- */
+`library.doSomething();`;
+/* ---------------------------- */
+            const output =
+/* ---------------------------- */
+`import assert from 'assert';
 
 it('Example test', () => {
 
-    if (conditionMet) {
-        require('global-pollution');
-    }
-    const result = library.someFunction();
-
-    console.log(result);
-    // prints 'some-result'
+    library.doSomething();
 });
-`;
-
+`; /* ------------------------- */
             const lines = input.split('\n');
 
             const result = lines
                 .reduce((...args) => converters.wrapAsTestCase(...args, {
-                    lastImport: 0,
+                    lastImport: -1,
                     testName: 'Example test'
                 }), [])
                 .join('\n');

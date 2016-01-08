@@ -43,6 +43,9 @@ const wrapAsTestCase = (result, line, index, lines, config) => {
                 }
                 result.push(line.length === 0 ? '' : `    ${line}`);
                 result.mode = 'indent';
+                if (lines.length === 1) {
+                    result.push('});\n');
+                }
         }
     } else {
         result.push(line);
