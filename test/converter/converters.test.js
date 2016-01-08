@@ -6,7 +6,7 @@ describe('Converters', () => {
 
     describe('Import converter', () => {
 
-        it('swaps library name with a path to the main script', () => {
+        it('replaces library name with a path to the main script', () => {
 
             const importStatement = `import library from 'library-name';`
             const libraryName = 'library-name';
@@ -19,11 +19,35 @@ describe('Converters', () => {
 
             assert.equal(replacedImportStatement, `import library from '../main.js';`)
         });
+
+        it('does not replace variable matching library name', () => {
+
+            const importStatement = `import library from 'library';`
+            const libraryName = 'library';
+            const pathToMainScript = 'main.js';
+
+            const replacedImportStatement = converters.convertImport(importStatement, {
+                libraryName,
+                pathToMainScript
+            });
+
+            assert.equal(replacedImportStatement, `import library from '../main.js';`)
+        });
+
     });
 
-    describe('Code wrapper', () => {
+    describe('Test case code wrapper', () => {
 
-        it('wraps the single line as a test case', () => {
+        const wrapAsTestCase = (code, testName, lastImport = -1) => {
+            return code.split('\n')
+                .reduce((...args) => converters.wrapAsTestCase(...args, {
+                    lastImport,
+                    testName
+                }), [])
+                .join('\n');
+        };
+
+        it('wraps the single-line code', () => {
 
             const input =
 /* ---------------------------- */
@@ -33,22 +57,36 @@ describe('Converters', () => {
 /* ---------------------------- */
 `import assert from 'assert';
 
-it('Example test', () => {
+it('Single-line code', () => {
 
     library.doSomething();
 });
 `; /* ------------------------- */
-            const lines = input.split('\n');
 
-            const result = lines
-                .reduce((...args) => converters.wrapAsTestCase(...args, {
-                    lastImport: -1,
-                    testName: 'Example test'
-                }), [])
-                .join('\n');
-
-            assert.equal(result, output);
+            assert.equal(wrapAsTestCase(input, 'Single-line code'), output);
         });
+
+        it('wraps the multi-line code', () => {
+
+            const input =
+/* ---------------------------- */
+`library.doSomething();
+library.doSomethingElse();`;
+/* ---------------------------- */
+            const output =
+/* ---------------------------- */
+`import assert from 'assert';
+
+it('Two-line code', () => {
+
+    library.doSomething();
+    library.doSomethingElse();
+});
+`; /* ------------------------- */
+
+            assert.equal(wrapAsTestCase(input, 'Two-line code'), output);
+        });
+
     });
 
 });
