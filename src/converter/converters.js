@@ -10,7 +10,6 @@ const convertImport = (line, config) => {
 
 const convertRequire = (line, config) => {
     if (line.match(new RegExp(`.+require\\('${config.libraryName}'\\)`))) {
-        //console.log('=====> Found require');
         return line.replace(new RegExp(`require\\('${config.libraryName}'\\)`), `require('../${config.pathToMainScript}')`);
     } else {
         return line;
@@ -76,29 +75,7 @@ const replaceEqualityStatement = (line) => {
     return line;
 };
 
-const convertToTest = (code, testName, libraryName, pathToMainScript) => {
-
-    const config = {
-        // parameters
-        testName,
-        libraryName,
-        pathToMainScript,
-        // processing information
-        lastImport: -1,
-        variableName: null
-    };
-
-    return code.trim().split(/\n/)
-        .map(line => convertImport(line, config))
-        .map(line => convertRequire(line, config))
-        .map((line, index) => findLastImport(line, index, config))
-        .reduce((...args) => wrapAsTestCase(...args, config), [])
-        .map(line => replacePrintsStatement(line, config))
-        .map(line => replaceEqualityStatement(line))
-        .join('\n');
-};
-
-convertToTest.features = {
+module.exports = {
     convertImport,
     convertRequire,
     findLastImport,
@@ -106,5 +83,3 @@ convertToTest.features = {
     replacePrintsStatement,
     replaceEqualityStatement
 };
-
-export default convertToTest;
