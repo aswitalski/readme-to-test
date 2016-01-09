@@ -1,54 +1,65 @@
 'use strict';
 
 import fs from 'fs';
-import path from 'path';
 import rmdir from 'rmdir';
 
 import extractExamples from './extractor/extract-examples';
 import convertToTest from './converter/convert-to-test';
 import mochaRunner from './runner/mocha-runner';
 
-let packageJson;
-fs.readFile('./package.json', 'utf8', (err, contents) => {
-    packageJson = JSON.parse(contents);
+const loadPackageJson = new Promise((resolve, reject) => {
+    fs.readFile('./package.json', 'utf8', (err, contents) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(JSON.parse(contents));
+        }
+    });
+});
+
+const loadReadMe = new Promise((resolve, reject) => {
+    fs.readFile('./README.md', 'utf8', (err, markdown) => {
+        if (err) {
+            reject(err);
+        } else {
+            resolve(markdown);
+        }
+    });
+});
+
+const loadOptions = new Promise(resolve => {
+   resolve({
+     tempDir: './.tmp/'
+   });
 });
 
 module.exports = () => {
-    fs.readFile('./README.md', 'utf8', (err, markdown) => {
 
-        if (err) {
-            console.error('Error reading README.md file');
-            process.exit(1);
-        }
+    Promise.all([loadPackageJson, loadReadMe, loadOptions]).then(([packageJson, markdown, options]) => {
 
         const examples = extractExamples(markdown);
-
-        console.log(` Found ${examples.length} code examples.`);
-
         const tests = examples.map(example => convertToTest(example.code, example.name, packageJson.name, packageJson.main));
 
-        console.log('\n==> Validating README examples...');
+        console.log(`\n==> Validating ${examples.length} README examples...`);
 
         try {
 
-            const tempDir = './.tmp';
+            fs.mkdirSync(options.tempDir);
 
-            fs.mkdirSync(tempDir);
-
-            tests.map((test, index) => {
-                fs.writeFileSync('./.tmp/example-' + (index + 1) + '.test.js', test);
+            const testFileNames = tests.map(function writeTestsToFiles(test, index) {
+                const path = options.tempDir.concat('example-' + (index + 1) + '.test.js');
+                fs.writeFileSync(path, test);
+                return path;
             });
 
-            require('babel-register');
-
-            const files = fs.readdirSync(tempDir)
-                .filter(file => file.substr(-3) === '.js')
-                .map(file => path.join(tempDir, file));
-
-            mochaRunner(files);
+            mochaRunner(testFileNames);
 
         } finally {
-            rmdir('./.tmp', { fs: fs });
+            rmdir(options.tempDir, { fs: fs });
         }
+
+    }).catch((err) => {
+
+        console.error(err);
     });
 };
