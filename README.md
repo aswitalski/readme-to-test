@@ -58,10 +58,13 @@ will be converted into a unit test:
 import assert from 'assert';
 import library from './main-script.js';
 
-const result = library.someFunction();
+it('Converts prints statement following console.log to assertion', () => {
 
-console.log(result);
-assert.deepEqual(result, 'result from some function');
+    const result = library.someFunction();
+
+    console.log(result);
+    assert.deepEqual(result, 'result from some function');
+}
 ```
 
 #### No console output
@@ -73,8 +76,12 @@ var library = require('library');
 
 ``` js
 var assert = require('assert');
-var library = require('library');
-assert.deepEqual(library.version, '1.0');
+
+it('Converts equality statement to assertion', () => {
+  
+    var library = require('library');
+    assert.deepEqual(library.version, '1.0');
+}
 ```
 
 If imports are not used the generated tests are compatible with ES5.
