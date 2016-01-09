@@ -2,6 +2,8 @@
 
 A simple README code examples validator.
 
+[![Build Status](https://snap-ci.com/aswitalski/readme-to-test/branch/master/build_image)](https://snap-ci.com/aswitalski/readme-to-test/branch/master)
+
 ## Introduction
 
 The `readme-to-test` libary allows to easily validate code examples defined in the README file.
