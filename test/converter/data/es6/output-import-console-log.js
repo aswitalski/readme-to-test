@@ -8,6 +8,6 @@ it('Example one', () => {
     }
     const result = library.someFunction();
 
-    console.log(result);
+    // console.log(result);
     assert.deepEqual(result, 'some-result');
 });

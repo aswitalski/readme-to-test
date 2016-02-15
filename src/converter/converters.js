@@ -59,6 +59,7 @@ const replacePrintsStatement = (line, context) => {
     const logLine = line.match(/console\.log\((.+)\)/);
     if (logLine) {
         context.variableName = logLine[1];
+        return line.replace(/console\.log/, '// console.log');
     } else {
         const printsComment = line.match(/\/\/\s*prints (.+)/);
         if (printsComment) {
