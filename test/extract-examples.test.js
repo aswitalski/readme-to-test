@@ -1,5 +1,6 @@
 'use strict';
 
+import 'babel-polyfill';
 import extractExamples from '../src/extractor/extract-examples';
 
 describe('JavaScript code examples extraction', () => {
