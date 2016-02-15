@@ -56,7 +56,7 @@ const wrapAsTestCase = (result, line, index, lines, context) => {
 };
 
 const replacePrintsStatement = (line, context) => {
-    const logLine = line.match(/console\.log\((.+?)\)/);
+    const logLine = line.match(/console\.log\((.+)\)/);
     if (logLine) {
         context.variableName = logLine[1];
     } else {
