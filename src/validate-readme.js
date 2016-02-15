@@ -55,7 +55,9 @@ module.exports = () => {
             mochaRunner(testFileNames);
 
         } finally {
-            rmdir(options.tempDir, { fs: fs });
+            rmdir(options.tempDir, { fs: fs }, function (err) {
+              console.error(err);
+            });
         }
 
     }).catch((err) => {
