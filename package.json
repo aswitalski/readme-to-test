@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "A simple README code examples validator.",
   "main": "index.js",
+  "bin": {
+    "readme-to-test": "./bin/validate.js"
+  },
   "scripts": {
     "babel": "babel src -d lib -q",
     "test": "npm run babel && mocha"
