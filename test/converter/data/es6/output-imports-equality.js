@@ -1,4 +1,4 @@
-import assert from 'assert';
+var assert = require('assert');
 import a from 'a';
 import library from '.././main-script.js';
 import b from 'b';

@@ -27,7 +27,7 @@ const findLastImport = (line, index, context) => {
 
 const wrapAsTestCase = (result, line, index, lines, context) => {
     if (index === 0) {
-        result.push(`import assert from 'assert';`);
+        result.push('var assert = require(\'assert\');');
     }
     if (index > context.lastImport) {
         switch (result.mode) {

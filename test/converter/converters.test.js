@@ -82,7 +82,7 @@ describe('Converters', () => {
 /* ---------------------------- */
             const output =
 /* ---------------------------- */
-`import assert from 'assert';
+`var assert = require('assert');
 
 it('Single-line code', () => {
 
@@ -102,7 +102,7 @@ library.doSomethingElse();`;
 /* ---------------------------- */
             const output =
 /* ---------------------------- */
-`import assert from 'assert';
+`var assert = require('assert');
 
 it('Two-line code', () => {
 
