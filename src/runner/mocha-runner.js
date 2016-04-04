@@ -1,4 +1,5 @@
 import Mocha from 'mocha';
+import Promise from 'bluebird';
 
 export default (files) => {
 
@@ -7,7 +8,7 @@ export default (files) => {
     const mocha = new Mocha();
     files.map(file => mocha.addFile(file));
 
-    mocha.run(failures => {
-        process.on('exit', () => process.exit(failures));
-    });
+    return new Promise((resolve, reject) => {
+      mocha.run(resolve)
+    })
 };

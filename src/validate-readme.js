@@ -3,6 +3,7 @@
 import 'babel-polyfill';
 import fs from 'fs';
 import rmdir from 'rmdir';
+import Promise from 'bluebird';
 
 import extractExamples from './extractor/extract-examples';
 import convertToTest from './converter/convert-to-test';
@@ -35,33 +36,27 @@ const loadOptions = new Promise(resolve => {
 });
 
 module.exports = () => {
-
     Promise.all([loadPackageJson, loadReadMe, loadOptions]).then(([packageJson, markdown, options]) => {
-
         const examples = extractExamples(markdown);
         const tests = examples.map(example => convertToTest(example.code, example.name, packageJson.name, packageJson.main));
 
         console.log(`\n==> Validating ${examples.length} README examples...`);
 
-        try {
+        fs.mkdirSync(options.tempDir);
 
-            fs.mkdirSync(options.tempDir);
+        const testFileNames = tests.map(function writeTestsToFiles(test, index) {
+            const path = options.tempDir.concat('example-' + (index + 1) + '.test.js');
+            fs.writeFileSync(path, test);
+            return path;
+        });
 
-            const testFileNames = tests.map(function writeTestsToFiles(test, index) {
-                const path = options.tempDir.concat('example-' + (index + 1) + '.test.js');
-                fs.writeFileSync(path, test);
-                return path;
-            });
-
-            mochaRunner(testFileNames);
-
-        } finally {
-            rmdir(options.tempDir, { fs: fs }, function (err) {
+        return mochaRunner(testFileNames)
+          .finally(() => {
+            rmdir(options.tempDir, { fs }, function (err) {
               console.error(err);
             });
-        }
-
+          });
     }).catch((err) => {
         console.error(err && err.stack ? err.stack : err);
-    });
+    })
 };
