@@ -27,7 +27,7 @@ const findLastImport = (line, index, context) => {
 
 const wrapAsTestCase = (result, line, index, lines, context) => {
     if (index === 0) {
-        result.push(`import assert from 'assert';`);
+        result.push('var assert = require(\'assert\');');
     }
     if (index > context.lastImport) {
         switch (result.mode) {
@@ -56,9 +56,10 @@ const wrapAsTestCase = (result, line, index, lines, context) => {
 };
 
 const replacePrintsStatement = (line, context) => {
-    const logLine = line.match(/console\.log\((.+?)\)/);
+    const logLine = line.match(/console\.log\((.+)\)/);
     if (logLine) {
         context.variableName = logLine[1];
+        return line.replace(/console\.log/, '// console.log');
     } else {
         const printsComment = line.match(/\/\/\s*prints (.+)/);
         if (printsComment) {

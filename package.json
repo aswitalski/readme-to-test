@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "A simple README code examples validator.",
   "main": "index.js",
+  "bin": {
+    "readme-to-test": "./bin/validate.js"
+  },
   "scripts": {
     "babel": "babel src -d lib -q",
     "test": "npm run babel && mocha"
@@ -28,7 +31,9 @@
   "homepage": "https://github.com/aswitalski/readme-to-test#readme",
   "dependencies": {
     "assert": "^1.3.0",
+    "babel-polyfill": "^6.5.0",
     "babel-register": "^6.3.13",
+    "bluebird": "^3.3.4",
     "mocha": "^2.3.4",
     "rmdir": "^1.1.0",
     "root-require": "^0.3.1"

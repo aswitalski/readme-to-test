@@ -15,11 +15,11 @@ Tests are run with Mocha and can be easily integrated with the build process (an
 
 `npm install readme-to-test --save-dev`
 
-## Command line 
+## Command line
 
 The validation can be triggered by executing the following command in the target project's main directory:
 ```
-node ./node_modules/readme-to-test/bin/validate.js
+node ./node_modules/.bin/readme-to-test
 ```
 The README file is automatically located. The validator creates a temporary directory (`.tmp` by default) and creates a separate self-contained unit test file for each block of JavaScript code found in the README. Then all the generated tests are run with Mocha. The directory is only deleted after a successful validation.
 
@@ -33,7 +33,7 @@ The validate-readme-examples script can supplement the existing tests:
   "version": "1.0.0",
   "main": "main-script.js",
   "scripts": {
-    "validate-readme-examples": "node ./node_modules/readme-to-test/bin/validate.js",
+    "validate-readme-examples": "readme-to-test",
     "test": "mocha unit/tests/ && npm run validate-readme-examples"
   }
 }
@@ -80,7 +80,7 @@ var library = require('library');
 var assert = require('assert');
 
 it('Converts equality statement to assertion', () => {
-  
+
     var library = require('library');
     assert.deepEqual(library.version, '1.0');
 }
@@ -95,6 +95,6 @@ The libary uses the following default settings:
 --opts-file=test/r2t.opts --temp-dir=.tmp --temp-delete-after=true --temp-clear-before=true
 ```
 
-The temporary folder settings can be overriden in `test/r2t.opts` file. 
+The temporary folder settings can be overriden in `test/r2t.opts` file.
 
 P.S. Yep, the library validates its own README as well!

@@ -1,4 +1,4 @@
-import assert from 'assert';
+var assert = require('assert');
 
 it('Example three', () => {
 
@@ -10,6 +10,6 @@ it('Example three', () => {
         DESKTOP: null
     });
 
-    console.log(Consts);
+    // console.log(Consts);
     assert.deepEqual(Consts, { MOBILE: 'MODE-MOBILE', TABLET: 'MODE-TABLET', DESKTOP: 'MODE-DESKTOP' });
 });

@@ -1,4 +1,4 @@
-import assert from 'assert';
+var assert = require('assert');
 import library from '.././main-script.js';
 
 it('Example one', () => {
@@ -8,6 +8,6 @@ it('Example one', () => {
     }
     const result = library.someFunction();
 
-    console.log(result);
+    // console.log(result);
     assert.deepEqual(result, 'some-result');
 });
