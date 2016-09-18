@@ -85,16 +85,3 @@ it('Converts equality statement to assertion', () => {
     assert.deepEqual(library.version, '1.0');
 }
 ```
-
-If imports are not used the generated tests are compatible with ES5.
-
-# Configuration
-
-The libary uses the following default settings:
-```
---opts-file=test/r2t.opts --temp-dir=.tmp --temp-delete-after=true --temp-clear-before=true
-```
-
-The temporary folder settings can be overriden in `test/r2t.opts` file.
-
-P.S. Yep, the library validates its own README as well!
